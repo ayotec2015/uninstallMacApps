@@ -15,7 +15,7 @@ To find out the bundle identifier of an app try this:
 
 ![Screenshot2](https://github.com/aduffner/uninstallMacApps/blob/main/bbedit_stop.png)
 
-![Screenshot3](https://github.com/aduffner/uninstallMacApps/blob/main/bbedit_uninstall.png)
+<img src="https://github.com/aduffner/uninstallMacApps/blob/main/bbedit_uninstall.png" width="60%">
 
 ## Usage
 
