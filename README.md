@@ -1,2 +1,3 @@
-# uninstallMacApps
-Script to provide standard users the ability to delete apps on their own via Jamf Self Service Policy.
+# Uninstall Mac Apps
+
+Description coming soon (please don't expect anything, I'll take my time)
