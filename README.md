@@ -1,6 +1,7 @@
 # Uninstall Mac Apps
 
-This script is designed to perform a task that is useful in some way. It contains a few lines of code and three screenshots to demonstrate how it works.
+This script is designed to provide standard users the ability to delete apps on their own, e.g. via Jamf Self Service Policy.
+
 
 ## Blacklist bundle identifiers or App Names
 To find out the bundle identifier of an app try this:
