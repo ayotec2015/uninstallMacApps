@@ -4,7 +4,7 @@
 # @Date:   2023-02-06T21:52:52+01:00
 # @Filename: uninstallMacApps.sh
 # @Last modified by:   Alexander Duffner
-# @Last modified time: 2023-02-08T14:17:34+01:00
+# @Last modified time: 2023-02-08T19:41:55+01:00
 ################################################################################
 # CREDITS: Heavily inspired of [1] and [2] - all Kudos to them!
 # [1] https://github.com/sunknudsen/privacy-guides/blob/dc98eaf2f4fe1a384b94c80d4c8b37c6839618d5/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative/app-cleaner.sh
@@ -44,14 +44,14 @@ app=$(askForApp 'Please select the app you want to delete') || exit
 echo "$app"
 
 if [ ! -e "$app/Contents/Info.plist" ]; then
-  printf "%s\n" "Cannot find app plist"
+  echo "Cannot find app plist"
   exit 1
 fi
 
 bundle_identifier=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Contents/Info.plist" 2>/dev/null)
 
 if [ "$bundle_identifier" = "" ]; then
-  printf "%s\n" "Cannot find app bundle identifier"
+  echo "Cannot find app bundle identifier"
   exit 1
 fi
 
@@ -71,7 +71,7 @@ fi
 
 sleep 1
 
-printf "%s\n" "Checking for running processes …"
+echo "Checking for running processes …"
 ################################# DO NOT TOUCH #################################
 processes=($(pgrep -afil "$app_name" | grep -v "uninstallScript.sh"))
 ################################# DO NOT TOUCH #################################
@@ -91,8 +91,8 @@ Please note that once the app is closed, any unsaved changes will be permanently
 
   answer=$?
   if [ "$answer" = "0" ]; then
-    printf "%s\n" "Killing running processes …"
-    # TODO
+    echo "Killing running processes …"
+    # TODO - maybe find a smoother way to kill, without blinking CrashReporter
     ################################# DO NOT TOUCH #################################
     killall "$app_name"
     ################################# DO NOT TOUCH #################################
@@ -109,7 +109,7 @@ paths+=($(find /private/var/db/receipts -iname "*$app_name*.bom" -maxdepth 1 -pr
 paths+=($(find /private/var/db/receipts -iname "*$bundle_identifier*.bom" -maxdepth 1 -prune 2>&1 | grep -v "Permission denied"))
 ################################# DO NOT TOUCH #################################
 
-printf "%s" "Finding app data …"
+echo "Finding app data …"
 
 locations=(
   "/Users/$currentUser/Library"
@@ -171,14 +171,14 @@ $(for i in "${paths[@]}"; do echo -e "- $i"; done)" \
 
 answer=$?
 if [ "$answer" = "0" ]; then
-  printf "%s\n" "Moving app data to trash…"
+  echo "Moving app data to trash…"
   sleep 1
   ################################ DO NOT TOUCH ################################
   posixFiles=$(printf ", POSIX file \"%s\"" ${paths[@]} | awk '{print substr($0,3)}')
   ################################ DO NOT TOUCH ################################
   echo "$posixFiles"
   /usr/bin/sudo -u "$currentUser" osascript -e "tell application \"Finder\" to delete { $posixFiles }" >/dev/null
-  printf "%s\n" "Done"
+  echo "Done"
 elif [ "$answer" = "2" ]; then
   exit 0
 fi
