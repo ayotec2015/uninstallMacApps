@@ -4,7 +4,7 @@
 # @Date:   2023-02-06T21:52:52+01:00
 # @Filename: uninstallMacApps.sh
 # @Last modified by:   Alexander Duffner
-# @Last modified time: 2023-02-08T19:41:55+01:00
+# @Last modified time: 2023-02-09T11:49:30+01:00
 ################################################################################
 # CREDITS: Heavily inspired of [1] and [2] - all Kudos to them!
 # [1] https://github.com/sunknudsen/privacy-guides/blob/dc98eaf2f4fe1a384b94c80d4c8b37c6839618d5/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative/app-cleaner.sh
@@ -73,7 +73,7 @@ sleep 1
 
 echo "Checking for running processes …"
 ################################# DO NOT TOUCH #################################
-processes=($(pgrep -afil "$app_name" | grep -v "uninstallScript.sh"))
+processes=($(pgrep -afil "$app_name" | grep -v "uninstallMacApps.sh"))
 ################################# DO NOT TOUCH #################################
 
 IFS=$'\n'
