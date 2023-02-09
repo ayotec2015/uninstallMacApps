@@ -4,7 +4,7 @@
 # @Date:   2023-02-06T21:52:52+01:00
 # @Filename: uninstallMacApps.sh
 # @Last modified by:   Alexander Duffner
-# @Last modified time: 2023-02-09T11:49:30+01:00
+# @Last modified time: 2023-02-09T13:56:14+01:00
 ################################################################################
 # CREDITS: Heavily inspired of [1] and [2] - all Kudos to them!
 # [1] https://github.com/sunknudsen/privacy-guides/blob/dc98eaf2f4fe1a384b94c80d4c8b37c6839618d5/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative/app-cleaner.sh
@@ -12,7 +12,7 @@
 # Additionally I implemented: https://github.com/bartreardon/swiftDialog
 ################################################################################
 
-currentUser=$(/bin/ls -l /dev/console | /usr/bin/awk '{ print $3}')
+safeMode="true" # true means only nothing will be deleted
 
 # Some apps we may don't want let the user to uninstall trough this way
 blacklistNames="Jamf Connect
@@ -41,21 +41,20 @@ EOF
 
 # User will be aske d to choose an app
 app=$(askForApp 'Please select the app you want to delete') || exit
-echo "$app"
 
 if [ ! -e "$app/Contents/Info.plist" ]; then
   echo "Cannot find app plist"
   exit 1
 fi
 
+currentUser=$(/bin/ls -l /dev/console | /usr/bin/awk '{ print $3}')
 bundle_identifier=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Contents/Info.plist" 2>/dev/null)
+app_name=$(basename "$app" .app)
 
 if [ "$bundle_identifier" = "" ]; then
   echo "Cannot find app bundle identifier"
   exit 1
 fi
-
-app_name=$(basename "$app" .app)
 
 # We will stop it, if the app should be not allowed to be uninstalled
 if (grep -q "$app_name" <<<$blacklistNames || grep -q "$blacklistBundlePrefixes" <<<$bundle_identifier); then
@@ -170,6 +169,13 @@ $(for i in "${paths[@]}"; do echo -e "- $i"; done)" \
   --overlayicon "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/FullTrashIcon.icns"
 
 answer=$?
+if [[ $safeMode == false ]]; then
+  answer="$answer"
+else
+  answer="2"
+  echo "Nothing deleted. Safe Mode was on."
+fi
+
 if [ "$answer" = "0" ]; then
   echo "Moving app data to trash…"
   sleep 1
