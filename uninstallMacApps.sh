@@ -12,7 +12,7 @@
 # Additionally I implemented: https://github.com/bartreardon/swiftDialog
 ################################################################################
 
-safeMode="true" # true means only nothing will be deleted
+safeMode="false" # true means only nothing will be deleted
 
 # Some apps we may don't want let the user to uninstall trough this way
 blacklistNames="Jamf Connect
@@ -39,7 +39,7 @@ askForApp() {
 EOF
 }
 
-# User will be aske d to choose an app
+# User will be aske d to choose an app
 app=$(askForApp 'Please select the app you want to delete') || exit
 
 if [ ! -e "$app/Contents/Info.plist" ]; then
@@ -48,6 +48,7 @@ if [ ! -e "$app/Contents/Info.plist" ]; then
 fi
 
 currentUser=$(/bin/ls -l /dev/console | /usr/bin/awk '{ print $3}')
+trash() { mv "$@" /Users/$currentUser/.Trash/ ; }
 bundle_identifier=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$app/Contents/Info.plist" 2>/dev/null)
 app_name=$(basename "$app" .app)
 
@@ -182,9 +183,13 @@ if [ "$answer" = "0" ]; then
   ################################ DO NOT TOUCH ################################
   posixFiles=$(printf ", POSIX file \"%s\"" ${paths[@]} | awk '{print substr($0,3)}')
   ################################ DO NOT TOUCH ################################
-  echo "$posixFiles"
-  /usr/bin/sudo -u "$currentUser" osascript -e "tell application \"Finder\" to delete { $posixFiles }" >/dev/null
-  echo "Done"
+ # echo "$posixFiles"
+ for appsToDel in ${paths[@]}; do
+   echo "Deleting ${appsToDel}"
+   rm -rf "$appsToDel"
+ done
+  #/usr/bin/sudo -u "$currentUser" osascript -e "tell application \"Finder\" to delete { $posixFiles }" >/dev/null
+  #echo "Done"
 elif [ "$answer" = "2" ]; then
   exit 0
 fi
